@@ -1,1 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estudio de Miniaturas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1b1b1b;
+    --paper:#f6f1e6;
+    --gold:#d9a441;
+    --teal:#1f5f5b;
+    --line:rgba(27,27,27,0.16);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    padding:0 0 70px;
+  }
+
+  .nameplate{
+    padding:30px 20px 22px;
+    border-bottom:2px solid var(--ink);
+  }
+  .nameplate .kicker{
+    font-size:0.72rem;
+    color:var(--teal);
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  .nameplate h1{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:2.1rem;
+    line-height:1.02;
+    margin:0 0 8px;
+    letter-spacing:-0.01em;
+  }
+  .nameplate p{
+    margin:0;
+    font-size:0.92rem;
+    color:#5b5648;
+    line-height:1.45;
+    max-width:38ch;
+  }
+
+  main{
+    max-width:520px;
+    margin:0 auto;
+    padding:0 20px;
+  }
+
+  .section{
+    padding:22px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .section:last-of-type{border-bottom:none;}
+
+  .section-title{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1.05rem;
+    margin:0 0 14px;
+  }
+  .section-title small{
+    display:block;
+    font-family:'Inter',sans-serif;
+    font-weight:400;
+    font-size:0.78rem;
+    color:#9a927c;
+    margin-top:2px;
+  }
+
+  .platform-row{
+    display:flex;
+    gap:10px;
+  }
+  .platform-btn{
+    flex:1;
+    background:white;
+    border:2px solid var(--ink);
+    border-radius:4px;
+    padding:14px 10px;
+    text-align:left;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+  .platform-btn .p-name{
+    font-weight:700;
+    font-size:0.95rem;
+    display:block;
+  }
+  .platform-btn .p-dim{
+    font-size:0.75rem;
+    color:#777;
+  }
+  .platform-btn.active{
+    background:var(--ink);
+    color:white;
+  }
+  .platform-btn.active .p-dim{color:#ccc;}
+
+  label{
+    display:block;
+    font-size:0.78rem;
+    color:#5b5648;
+    margin-bottom:6px;
+    font-weight:500;
+  }
+  input[type=text], textarea{
+    width:100%;
+    font-family:'Inter', sans-serif;
+    font-size:1rem;
+    padding:11px 12px;
+    border:1.5px solid #cfc8b8;
+    border-radius:6px;
+    margin-bottom:16px;
+    resize:none;
+    background:#fffdfa;
+  }
+  input[type=text]:focus, textarea:focus{
+    outline:none;
+    border-color:var(--teal);
+  }
+  textarea{height:58px;}
+
+  .drop{
+    border:1.5px dashed #b9b09a;
+    border-radius:6px;
+    padding:16px;
+    text-align:center;
+    cursor:pointer;
+    font-size:0.85rem;
+    color:#5b5648;
+    background:#fffdfa;
+  }
+  input[type=file]{display:none;}
+  .hint{font-size:0.72rem; color:#9a927c; margin:8px 0 12px;}
+
+  .resource-strip{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:12px;
+  }
+  .resource-thumb{
+    width:64px;
+    height:64px;
+    border-radius:6px;
+    border:2px solid var(--ink);
+    object-fit:cover;
+    cursor:pointer;
+  }
+  .resource-thumb.placed{
+    opacity:0.4;
+  }
+
+  .swatches{
+    display:flex;
+    gap:10px;
+    margin-bottom:6px;
+    flex-wrap:wrap;
+  }
+  .swatch{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    border:2px solid var(--ink);
+    cursor:pointer;
+    position:relative;
+  }
+  .swatch.selected::after{
+    content:'';
+    position:absolute;
+    inset:-5px;
+    border:2px solid var(--ink);
+    border-radius:50%;
+  }
+
+  .layout-opts{
+    display:flex;
+    gap:8px;
+    margin-top:16px;
+  }
+  .layout-opts button{
+    flex:1;
+    font-family:'Inter',sans-serif;
+    font-size:0.82rem;
+    padding:10px 4px;
+    border-radius:6px;
+    border:1.5px solid #cfc8b8;
+    background:white;
+    cursor:pointer;
+    color:#5b5648;
+  }
+  .layout-opts button.active{
+    border-color:var(--ink);
+    background:var(--ink);
+    color:white;
+  }
+
+  .preview-frame{
+    background:var(--ink);
+    border-radius:10px;
+    padding:14px;
+  }
+  #canvas-wrap{
+    display:flex;
+    justify-content:center;
+    touch-action:none;
+  }
+  canvas{
+    width:100%;
+    height:auto;
+    border-radius:4px;
+    display:block;
+    touch-action:none;
+  }
+
+  button.primary{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:1rem;
+    padding:15px;
+    border-radius:8px;
+    border:2px solid var(--ink);
+    background:var(--gold);
+    color:var(--ink);
+    cursor:pointer;
+    margin-top:16px;
+  }
+  button.primary:active{transform:translateY(1px);}
+  button.secondary{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    font-size:0.88rem;
+    padding:10px;
+    border-radius:8px;
+    border:1.5px solid #cfc8b8;
+    background:white;
+    color:#5b5648;
+    cursor:pointer;
+    margin-top:8px;
+  }
+
+  .note{
+    font-size:0.78rem;
+    color:#9a927c;
+    margin-top:12px;
+    line-height:1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="nameplate">
+  <div class="kicker">Herramienta de creador</div>
+  <h1>Estudio de miniaturas</h1>
+  <p>Título, descripción y las imágenes que quieras usar como recurso. Acomódalas tú mismo dentro del lienzo.</p>
+</div>
+
+<main>
+
+  <div class="section">
+    <div class="section-title">¿Para dónde es la miniatura?</div>
+    <div class="platform-row" id="platform-row">
+      <button class="platform-btn active" data-w="1280" data-h="720" data-p="youtube">
+        <span class="p-name">YouTube</span>
+        <span class="p-dim">1280 × 720</span>
+      </button>
+      <button class="platform-btn" data-w="1080" data-h="1920" data-p="tiktok">
+        <span class="p-name">TikTok</span>
+        <span class="p-dim">1080 × 1920</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Contenido</div>
+    <label>Título</label>
+    <input type="text" id="title" maxlength="60" placeholder="NO CREERÁS LO QUE PASÓ">
+
+    <label>Descripción o subtítulo</label>
+    <textarea id="desc" maxlength="80" placeholder="parte 2 al final 😱"></textarea>
+  </div>
+
+  <div class="section">
+    <div class="section-title">
+      Recursos
+      <small>Imágenes opcionales que puedes acomodar dentro de la miniatura</small>
+    </div>
+    <div class="drop" id="drop">Toca para subir una o varias imágenes</div>
+    <p class="hint">Sube tus recursos y luego toca cada miniatura de abajo para agregarla al lienzo. Una vez agregada, arrástrala y usa la esquina para cambiar su tamaño.</p>
+    <div class="resource-strip" id="resource-strip"></div>
+    <button class="secondary" id="btn-delete-selected" style="display:none;">Quitar imagen seleccionada del lienzo</button>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Estilo del texto</div>
+    <label>Color de acento</label>
+    <div class="swatches" id="swatches"></div>
+
+    <label style="margin-top:16px;">Composición del texto</label>
+    <div class="layout-opts" id="layouts">
+      <button data-l="bottom" class="active">Abajo</button>
+      <button data-l="center">Centro</button>
+      <button data-l="banner">Banner</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Vista previa</div>
+    <div class="preview-frame">
+      <div id="canvas-wrap">
+        <canvas id="canvas" width="1280" height="720"></canvas>
+      </div>
+    </div>
+    <button class="primary" id="btn-download">Descargar miniatura</button>
+    <p class="note">La imagen se descarga en PNG al tamaño exacto de la plataforma elegida. Toca y arrastra los recursos directamente sobre la vista previa.</p>
+  </div>
+
+</main>
+
+<input type="file" id="file-input" accept="image/*" multiple>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const titleInput = document.getElementById('title');
+const descInput = document.getElementById('desc');
+const dropEl = document.getElementById('drop');
+const fileInput = document.getElementById('file-input');
+const swatchesEl = document.getElementById('swatches');
+const layoutsEl = document.getElementById('layouts');
+const platformRow = document.getElementById('platform-row');
+const resourceStrip = document.getElementById('resource-strip');
+const btnDeleteSelected = document.getElementById('btn-delete-selected');
+
+let accent = '#d9a441';
+let layout = 'bottom';
+let W = 1280, H = 720;
+
+let resources = [];      // {id, img}
+let placed = [];         // {id, resId, img, x, y, w, h}
+let selectedId = null;
+let nextId = 1;
+
+const colors = ['#d9a441','#ff3e6c','#1ec8c8','#7c5cff','#ffffff','#ff8a00'];
+colors.forEach((c,i) => {
+  const el = document.createElement('div');
+  el.className = 'swatch' + (i===0 ? ' selected' : '');
+  el.style.background = c;
+  el.addEventListener('click', () => {
+    accent = c;
+    [...swatchesEl.children].forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    draw();
+  });
+  swatchesEl.appendChild(el);
+});
+
+platformRow.addEventListener('click', e => {
+  const btn = e.target.closest('.platform-btn');
+  if (!btn) return;
+  [...platformRow.children].forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const oldW = W, oldH = H;
+  W = parseInt(btn.dataset.w);
+  H = parseInt(btn.dataset.h);
+  canvas.width = W;
+  canvas.height = H;
+  // rescale placed resources proportionally to new canvas size
+  const sx = W/oldW, sy = H/oldH;
+  placed.forEach(p => { p.x*=sx; p.y*=sy; p.w*=sx; p.h*=sy; });
+  draw();
+});
+
+layoutsEl.addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  layout = e.target.dataset.l;
+  [...layoutsEl.children].forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  draw();
+});
+
+dropEl.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', e => {
+  [...e.target.files].forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const res = { id: nextId++, img };
+        resources.push(res);
+        renderResourceStrip();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  fileInput.value = '';
+});
+
+function renderResourceStrip(){
+  resourceStrip.innerHTML = '';
+  resources.forEach(res => {
+    const thumb = document.createElement('img');
+    thumb.src = res.img.src;
+    thumb.className = 'resource-thumb';
+    thumb.addEventListener('click', () => addResourceToCanvas(res));
+    resourceStrip.appendChild(thumb);
+  });
+}
+
+function addResourceToCanvas(res){
+  const ratio = res.img.width / res.img.height;
+  let w = W * 0.4;
+  let h = w / ratio;
+  if (h > H * 0.4){ h = H*0.4; w = h*ratio; }
+  const p = {
+    id: nextId++,
+    resId: res.id,
+    img: res.img,
+    x: (W - w)/2,
+    y: (H - h)/2,
+    w, h
+  };
+  placed.push(p);
+  selectedId = p.id;
+  updateDeleteButton();
+  draw();
+}
+
+btnDeleteSelected.addEventListener('click', () => {
+  placed = placed.filter(p => p.id !== selectedId);
+  selectedId = null;
+  updateDeleteButton();
+  draw();
+});
+
+function updateDeleteButton(){
+  btnDeleteSelected.style.display = selectedId ? 'block' : 'none';
+}
+
+titleInput.addEventListener('input', draw);
+descInput.addEventListener('input', draw);
+
+function wrapText(text, maxWidth, font){
+  ctx.font = font;
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  for (const w of words){
+    const test = line ? line + ' ' + w : w;
+    if (ctx.measureText(test).width > maxWidth && line){
+      lines.push(line);
+      line = w;
+    } else {
+      line = test;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+const HANDLE = 26; // touch-friendly handle size in canvas px equivalent (scaled below)
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+
+  const grad = ctx.createLinearGradient(0,0,W,H);
+  grad.addColorStop(0, '#1a1a1a');
+  grad.addColorStop(1, '#3a3a3a');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,W,H);
+
+  // draw placed resources
+  placed.forEach(p => {
+    ctx.drawImage(p.img, p.x, p.y, p.w, p.h);
+    if (p.id === selectedId){
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = Math.max(3, W*0.003);
+      ctx.strokeRect(p.x, p.y, p.w, p.h);
+      // resize handle bottom-right
+      const hs = W*0.028;
+      ctx.fillStyle = accent;
+      ctx.fillRect(p.x+p.w-hs/2, p.y+p.h-hs/2, hs, hs);
+    }
+  });
+
+  const title = titleInput.value || 'TU TÍTULO AQUÍ';
+  const desc = descInput.value || '';
+
+  const titleSize = Math.round(W * 0.058);
+  const descSize = Math.round(W * 0.026);
+  const pad = Math.round(W * 0.032);
+
+  ctx.textBaseline = 'alphabetic';
+
+  if (layout === 'banner'){
+    const bannerH = Math.round(H * 0.20);
+    ctx.fillStyle = accent;
+    ctx.fillRect(0, 0, W, bannerH);
+    ctx.fillStyle = '#0a0a0a';
+    ctx.textAlign = 'left';
+    const font = `bold ${titleSize}px 'Inter', sans-serif`;
+    const lines = wrapText(title.toUpperCase(), W - pad*2, font);
+    ctx.font = font;
+    const lineH = titleSize * 1.08;
+    let y = titleSize + (bannerH - lines.length*lineH - (desc ? descSize*1.4 : 0))/2;
+    lines.slice(0,2).forEach((l) => { ctx.fillText(l, pad, y); y += lineH; });
+    if (desc){
+      ctx.font = `${descSize}px 'Inter', sans-serif`;
+      ctx.fillText(desc, pad, y + descSize*0.3);
+    }
+  } else if (layout === 'center'){
+    ctx.textAlign = 'center';
+    const font = `900 ${titleSize}px 'Fraunces', serif`;
+    const lines = wrapText(title.toUpperCase(), W - pad*3, font);
+    ctx.font = font;
+    const lineH = titleSize * 1.08;
+    const startY = H/2 - (lines.length*lineH)/2;
+    lines.forEach((l,i) => {
+      ctx.strokeStyle = '#000'; ctx.lineWidth = titleSize*0.09;
+      ctx.lineJoin = 'round';
+      ctx.strokeText(l, W/2, startY + i*lineH);
+      ctx.fillStyle = accent;
+      ctx.fillText(l, W/2, startY + i*lineH);
+    });
+    if (desc){
+      ctx.font = `${descSize}px 'Inter', sans-serif`;
+      ctx.fillStyle = '#fff';
+      ctx.fillText(desc, W/2, startY + lines.length*lineH + descSize*1.6);
+    }
+  } else {
+    const gradH = Math.round(H * 0.45);
+    const gradB = ctx.createLinearGradient(0,H-gradH,0,H);
+    gradB.addColorStop(0, 'rgba(0,0,0,0)');
+    gradB.addColorStop(1, 'rgba(0,0,0,0.88)');
+    ctx.fillStyle = gradB;
+    ctx.fillRect(0,H-gradH,W,gradH);
+
+    ctx.textAlign = 'left';
+    ctx.fillStyle = accent;
+    const font = `900 ${titleSize}px 'Fraunces', serif`;
+    const lines = wrapText(title.toUpperCase(), W - pad*2, font);
+    ctx.font = font;
+    const lineH = titleSize * 1.06;
+    const bottomMargin = pad * (desc ? 2.2 : 1.2);
+    const baseY = H - bottomMargin - (lines.length-1)*lineH;
+    lines.forEach((l,i) => ctx.fillText(l, pad, baseY + i*lineH));
+
+    if (desc){
+      ctx.font = `${descSize}px 'Inter', sans-serif`;
+      ctx.fillStyle = '#fff';
+      ctx.fillText(desc, pad, H - pad*0.7);
+    }
+  }
+}
+
+// ---- pointer interaction: drag & resize placed resources ----
+let dragState = null; // { mode: 'move'|'resize', id, offsetX, offsetY, startW, startH, startX, startY }
+
+function canvasCoords(e){
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = W / rect.width;
+  const scaleY = H / rect.height;
+  return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+}
+
+function hitTestHandle(p, x, y){
+  const hs = W*0.028;
+  const hx = p.x + p.w - hs/2, hy = p.y + p.h - hs/2;
+  return x >= hx-hs*0.6 && x <= hx+hs*1.6 && y >= hy-hs*0.6 && y <= hy+hs*1.6;
+}
+function hitTestBody(p, x, y){
+  return x >= p.x && x <= p.x+p.w && y >= p.y && y <= p.y+p.h;
+}
+
+canvas.addEventListener('pointerdown', e => {
+  const {x, y} = canvasCoords(e);
+  if (selectedId){
+    const sel = placed.find(p => p.id === selectedId);
+    if (sel && hitTestHandle(sel, x, y)){
+      dragState = { mode:'resize', id: sel.id, startX:x, startY:y, startW:sel.w, startH:sel.h, ratio: sel.w/sel.h };
+      canvas.setPointerCapture(e.pointerId);
+      return;
+    }
+  }
+  // topmost hit
+  for (let i = placed.length-1; i>=0; i--){
+    const p = placed[i];
+    if (hitTestBody(p, x, y)){
+      selectedId = p.id;
+      updateDeleteButton();
+      dragState = { mode:'move', id: p.id, offsetX: x-p.x, offsetY: y-p.y };
+      canvas.setPointerCapture(e.pointerId);
+      draw();
+      return;
+    }
+  }
+  selectedId = null;
+  updateDeleteButton();
+  draw();
+});
+
+canvas.addEventListener('pointermove', e => {
+  if (!dragState) return;
+  const {x, y} = canvasCoords(e);
+  const p = placed.find(pp => pp.id === dragState.id);
+  if (!p) return;
+  if (dragState.mode === 'move'){
+    p.x = x - dragState.offsetX;
+    p.y = y - dragState.offsetY;
+  } else if (dragState.mode === 'resize'){
+    let newW = Math.max(40, dragState.startW + (x - dragState.startX));
+    let newH = newW / dragState.ratio;
+    p.w = newW; p.h = newH;
+  }
+  draw();
+});
+
+['pointerup','pointercancel','pointerleave'].forEach(ev => {
+  canvas.addEventListener(ev, () => { dragState = null; });
+});
+
+document.fonts.ready.then(draw);
+draw();
+
+document.getElementById('btn-download').addEventListener('click', () => {
+  const wasSelected = selectedId;
+  selectedId = null;
+  draw();
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = `miniatura-${W}x${H}.png`;
+  a.click();
+  selectedId = wasSelected;
+  draw();
+});
+</script>
+</body>
+</html>
 
